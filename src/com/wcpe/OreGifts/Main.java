@@ -11,8 +11,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 public class Main extends JavaPlugin {
 
+	final public static double Version = 1.0;
+	
 	private static List<Gifts> gifts = new ArrayList<>();
 
 	private static JavaPlugin LoadConfig;
@@ -33,7 +36,7 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		LoadConfig = this;
 		papi();
-		
+		timeUpCheck();
 		getServer().getConsoleSender().sendMessage("§b[OreGifts]§c载入矿物ing！");
 
 		Bukkit.getPluginManager().registerEvents(new com.wcpe.OreGifts.Listeners(), this);
@@ -71,7 +74,18 @@ public class Main extends JavaPlugin {
 		}
 
 	}
+	void timeUpCheck() {
 
+		if (this.getConfig().getBoolean("CheckVersion.Enable")) {
+			Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+				@Override
+				public void run() {
+					getServer().getConsoleSender().sendMessage("§a[§bOregifts§a]§a正在检查是否有新版本...");
+					UpCheck.upCheck.start();
+				}
+			}, 0, this.getConfig().getLong("CheckVersion.Time"));
+		}
+	}
 	void papi() {
 		File PlaceholderAPIFile = new File(getDataFolder(), "PlaceholderAPI.yml");
 		FileConfiguration Papi = YamlConfiguration.loadConfiguration(PlaceholderAPIFile);

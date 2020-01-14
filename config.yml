@@ -39,3 +39,7 @@ Worlds:
 - world_nether
 - world_the_end
 #启用世界
+CheckVersion:
+  Enable: true
+  Time: 86400
+  #秒为单位
