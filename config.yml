@@ -1,0 +1,41 @@
+Chances:
+  0:
+    Name: "§awhat?§b圣诞小彩蛋！！"
+    Material: "DIaMONd"
+    #大小写随意 注意写对
+    GiftMaterial: "STONE"
+    Lore:
+    - 'what?'
+    Commands:
+    - '[OP]/say 我是个大傻子'
+    #- '[CMD]后台执行的指令]'  此处玩家变量为(player)
+
+    #- '[TITLE]%server_tps%]SubTitle]10]70]20'
+    #- '[TITLE]主标题]副标题]淡入时间]停留时间]淡出时间'
+
+    #- '[CHAT]我进来了啦啦啦'
+    #- '[CHAT]玩家发送的指令' #加/就是指令 不加就是消息
+
+    #- '[ACTION]§a2333%player_name%'
+    #- '[ACTION]发送的消息'
+
+    #- '[OP]/say test'
+    #- '[OP]/指令 让所有在线玩家使用op权限执行此条指令'
+
+    #- '233333'
+    #- '233333 直接发送此段文字给玩家'
+
+    #- '[Bd]233'
+    #- '[Bd]服务器内广播消息'
+
+    #加/就是指令 不加就是发送文字
+    #注意[]后不能加空格
+    #支持Papi
+    Chance: 100
+    #最好概率之和为100 
+    
+Worlds:
+- world
+- world_nether
+- world_the_end
+#启用世界

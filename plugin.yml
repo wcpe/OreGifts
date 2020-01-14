@@ -1,0 +1,8 @@
+name: OreGifts
+main: com.wcpe.OreGifts.Main
+version: 1.0
+api-version: 1.13
+author: wcpe
+commands:
+   oregifts:
+      aliases: [oregifts,og]
