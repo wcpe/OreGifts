@@ -1,13 +1,13 @@
 Chances:
-  0:
-    Name: "§awhat?§b圣诞小彩蛋！！"
-    Material: "DIaMONd"
+#  0:
+#    Name: "§awhat?§b圣诞小彩蛋！！"
+#    Material: "DIaMONd"
     #大小写随意 注意写对
-    GiftMaterial: "STONE"
-    Lore:
-    - 'what?'
-    Commands:
-    - '[OP]/say 我是个大傻子'
+#    GiftMaterial: "STONE"
+#    Lore:
+#    - 'what?'
+#    Commands:
+#    - '[OP]/say 我是个大傻子'
     #- '[CMD]后台执行的指令]'  此处玩家变量为(player)
 
     #- '[TITLE]%server_tps%]SubTitle]10]70]20'
@@ -31,7 +31,7 @@ Chances:
     #加/就是指令 不加就是发送文字
     #注意[]后不能加空格
     #支持Papi
-    Chance: 100
+#    Chance: 100
     #最好概率之和为100 
     
 Worlds:
