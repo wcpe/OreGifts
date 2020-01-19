@@ -20,7 +20,7 @@ import com.wcpe.OreGifts.Utils.UpCheck;
 
 public class Main extends JavaPlugin {
 
-	final public static double Version = 0.9;
+	final public static double Version = 2.0;
 	
 	public static List<Gifts> gifts = new ArrayList<>();
 

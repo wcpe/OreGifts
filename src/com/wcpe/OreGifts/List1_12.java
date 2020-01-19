@@ -40,7 +40,7 @@ public class List1_12 implements Listener {
 		// id是否为岩浆和水
 		if (id >= 8 && id <= 11) {
 			// 判断两面是否岩浆 水 且对面不能为空气
-			if (toid == 0 && spawnCobble(id, to)) {
+			if (!(toid == 0) && spawnCobble(id, to)) {
 
 				List<String> worlds = Main.LoadConfig().getConfig().getStringList("Worlds");
 				// 判断世界
@@ -59,7 +59,11 @@ public class List1_12 implements Listener {
 					// 如果为true直接放置方块
 					if (containsGift(IndexId, Main.gifts)) {
 						Material material = getMaterial(IndexId);
-						to.setType(material);
+						try {
+							to.setType(material);
+						}catch(java.lang.IllegalArgumentException ee) {
+							
+						}
 					} else {
 						// fasle 存储位置
 						Material material = getMaterial(IndexId);
@@ -78,7 +82,11 @@ public class List1_12 implements Listener {
 						Main.Blockdata.put(key,
 								new GiftsData(loc,IndexId, name, lore, commands, material.toString(), giftmaterial));
 						// 然后接着放置
-						to.setType(material);
+						try {
+							to.setType(material);
+						}catch(java.lang.IllegalArgumentException ee) {
+							Bukkit.getConsoleSender().sendMessage("§4OreGifts配置文件Chances列表第" + IndexId + "个物品Material配置不是方块！");
+						}
 					}
 				}
 			}

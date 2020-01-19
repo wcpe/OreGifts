@@ -1,9 +1,9 @@
 Chances:
 #  0:
 #    Name: "§awhat?§b圣诞小彩蛋！！"
-#    Material: "DIaMONd"
+#    Material: "STONE"
     #大小写随意 注意写对
-#    GiftMaterial: "STONE"
+#    GiftMaterial: "DIaMONd"
 #    Lore:
 #    - 'what?'
 #    Commands:

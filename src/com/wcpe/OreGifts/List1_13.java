@@ -35,7 +35,7 @@ public class List1_13 implements Listener {
 		Block to = e.getToBlock();
 		Block block = e.getBlock();
 		// 判断两面是否岩浆 水
-		if (spawnCobble(block, to)) {
+		if (!to.getType().equals(Material.AIR)&&spawnCobble(block, to)) {
 			List<String> worlds = Main.LoadConfig().getConfig().getStringList("Worlds");
 			// 判断世界
 			if (worlds.contains(e.getBlock().getLocation().getWorld().getName())) {
@@ -56,7 +56,11 @@ public class List1_13 implements Listener {
 					Bukkit.getScheduler().runTask(Main.LoadConfig(), new Runnable() {
 						@Override
 						public void run() {
-							to.setType(material);
+							try {
+								to.setType(material);
+							}catch(java.lang.IllegalArgumentException e) {
+								
+							}
 						}
 					});
 				} else {
@@ -73,15 +77,24 @@ public class List1_13 implements Listener {
 					List<String> commands = Main.gifts.get(IndexId).getCommands();
 
 					String giftmaterial = Main.gifts.get(IndexId).getGiftMaterial();
-
-					Main.Blockdata.put(world + ";" + String.valueOf(x + ";" + y + ";" + z),
-							new GiftsData(loc, IndexId, name, lore, commands, material.toString(), giftmaterial));
+					try {
+						Main.Blockdata.put(world + ";" + String.valueOf(x + ";" + y + ";" + z),
+								new GiftsData(loc, IndexId, name, lore, commands, material.toString(), giftmaterial));
+					}catch(java.lang.NullPointerException ee) {
+						
+					}
+					
 
 					// 接着放置
 					Bukkit.getScheduler().runTask(Main.LoadConfig(), new Runnable() {
 						@Override
 						public void run() {
-							to.setType(material);
+							try {
+								to.setType(material);
+							}catch(java.lang.IllegalArgumentException e) {
+								Bukkit.getConsoleSender().sendMessage("§4OreGifts配置文件Chances列表第" + IndexId + "个物品Material配置不是方块！");
+							}
+							
 						}
 					});
 				}
