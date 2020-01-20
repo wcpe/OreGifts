@@ -40,7 +40,7 @@ public class List1_12 implements Listener {
 		// id是否为岩浆和水
 		if (id >= 8 && id <= 11) {
 			// 判断两面是否岩浆 水 且对面不能为空气
-			if (!(toid == 0) && spawnCobble(id, to)) {
+			if ((toid == 0) && spawnCobble(id, to)) {
 
 				List<String> worlds = Main.LoadConfig().getConfig().getStringList("Worlds");
 				// 判断世界

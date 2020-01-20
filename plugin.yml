@@ -1,6 +1,6 @@
 name: OreGifts
 main: com.wcpe.OreGifts.Main
-version: 2.0
+version: 2.1
 api-version: 1.13
 author: wcpe
 commands:

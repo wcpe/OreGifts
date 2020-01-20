@@ -27,15 +27,13 @@ import com.wcpe.OreGifts.Utils.RandomList;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class List1_13 implements Listener {
-	private final BlockFace[] faces = new BlockFace[] { BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH,
-			BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 
 	@EventHandler
 	public void FromTo(BlockFromToEvent e) {
 		Block to = e.getToBlock();
-		Block block = e.getBlock();
+
 		// 判断两面是否岩浆 水
-		if (!to.getType().equals(Material.AIR)&&spawnCobble(block, to)) {
+		if (to.getType().equals(Material.AIR) && spawnCobble(e)) {
 			List<String> worlds = Main.LoadConfig().getConfig().getStringList("Worlds");
 			// 判断世界
 			if (worlds.contains(e.getBlock().getLocation().getWorld().getName())) {
@@ -49,7 +47,8 @@ public class List1_13 implements Listener {
 				}
 				// 随机抽取一个id
 				int IndexId = RandomList.Random(TotalChance);
-
+				//取消原石生成
+				e.setCancelled(true);
 				if (containsGift(IndexId, Main.gifts)) {
 					Material material = getMaterial(IndexId);
 					// 由于1.12以上版本setType需要用runtask 否则将会消失 所以分版本
@@ -58,8 +57,8 @@ public class List1_13 implements Listener {
 						public void run() {
 							try {
 								to.setType(material);
-							}catch(java.lang.IllegalArgumentException e) {
-								
+							} catch (java.lang.IllegalArgumentException e) {
+
 							}
 						}
 					});
@@ -80,10 +79,9 @@ public class List1_13 implements Listener {
 					try {
 						Main.Blockdata.put(world + ";" + String.valueOf(x + ";" + y + ";" + z),
 								new GiftsData(loc, IndexId, name, lore, commands, material.toString(), giftmaterial));
-					}catch(java.lang.NullPointerException ee) {
-						
+					} catch (java.lang.NullPointerException ee) {
+
 					}
-					
 
 					// 接着放置
 					Bukkit.getScheduler().runTask(Main.LoadConfig(), new Runnable() {
@@ -91,10 +89,11 @@ public class List1_13 implements Listener {
 						public void run() {
 							try {
 								to.setType(material);
-							}catch(java.lang.IllegalArgumentException e) {
-								Bukkit.getConsoleSender().sendMessage("§4OreGifts配置文件Chances列表第" + IndexId + "个物品Material配置不是方块！");
+							} catch (java.lang.IllegalArgumentException e) {
+								Bukkit.getConsoleSender()
+										.sendMessage("§4OreGifts配置文件Chances列表第" + IndexId + "个物品Material配置不是方块！");
 							}
-							
+
 						}
 					});
 				}
@@ -265,18 +264,109 @@ public class List1_13 implements Listener {
 		}
 	}
 
-	// 判断水和岩浆方法
-	public boolean spawnCobble(Block block, Block To) {
-		Material type = block.getType();
-		Material mats1 = (type == Material.WATER ? Material.LAVA : Material.WATER);
-		Material mats2 = (type == Material.WATER ? Material.LAVA : Material.WATER);
-		for (BlockFace face : faces) {
-			Block r = To.getRelative(face, 1);
-			if (r.getType() == mats1 || r.getType() == mats2) {
+	public boolean spawnCobble(BlockFromToEvent event) {
+		Type fromType = this.getType(event.getBlock());
+		if (fromType != null && event.getFace() != BlockFace.DOWN) {
+			Block b = event.getToBlock();
+			Type toType = this.getType(event.getToBlock());
+			Location fromLoc = b.getLocation();
+			// fix for (lava -> water)
+			if (fromType == Type.LAVA || fromType == Type.LAVA_STAT) {
+				if (!isSurroundedByWater(fromLoc)) {
+					return false;
+				}
+			}
+			if ((toType != null || b.getType() == Material.AIR) && (generatesCobble(fromType, b))) {
+				
 				return true;
 			}
 		}
 		return false;
+	}
+
+///////////////////////////////////////////////////////////////////////////////////////
+	// 引用开源代码CustomOreGen
+///////////////////////////////////////////////////////////////////////////////////////
+	private BlockFace[] blockFaces = { BlockFace.NORTH, BlockFace.WEST, BlockFace.EAST, BlockFace.SOUTH };
+
+	public boolean isSurroundedByWater(Location fromLoc) {
+
+		for (BlockFace blockFace : blockFaces) {
+			if (this.getType(fromLoc.getBlock().getRelative(blockFace)) == Type.WATER
+					|| this.getType(fromLoc.getBlock().getRelative(blockFace)) == Type.WATER_STAT) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	private enum Type {
+		WATER, WATER_STAT, LAVA, LAVA_STAT
+	}
+
+	public Type getType(Block b) {
+		try {
+			Class.forName("org.bukkit.block.data.Levelled");
+			if (b.getBlockData() != null && b.getBlockData() instanceof org.bukkit.block.data.Levelled) {
+				org.bukkit.block.data.Levelled level = (org.bukkit.block.data.Levelled) b.getBlockData();
+				if (level.getLevel() == 0) {
+					if (level.getMaterial() == Material.WATER) {
+						return Type.WATER_STAT;
+					} else {
+						return Type.LAVA_STAT;
+					}
+				} else {
+					if (level.getMaterial() == Material.WATER) {
+						return Type.WATER;
+					} else {
+						return Type.LAVA;
+					}
+				}
+			}
+		} catch (ClassNotFoundException e) {
+			switch (b.getType().name()) {
+			case "WATER":
+				return Type.WATER;
+			case "STATIONARY_WATER":
+				return Type.WATER_STAT;
+			case "LAVA":
+				return Type.LAVA;
+			case "STATIONARY_LAVA":
+				return Type.LAVA_STAT;
+			}
+		}
+		return null;
+	}
+
+	private final BlockFace[] faces = { BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST,
+			BlockFace.SOUTH, BlockFace.WEST };
+
+	public boolean generatesCobble(Type type, Block b) {
+		Type mirrorType1 = (type == Type.WATER_STAT) || (type == Type.WATER) ? Type.LAVA_STAT : Type.WATER_STAT;
+		Type mirrorType2 = (type == Type.WATER_STAT) || (type == Type.WATER) ? Type.LAVA : Type.WATER;
+		for (BlockFace face : this.faces) {
+			Block r = b.getRelative(face, 1);
+			if ((this.getType(r) == mirrorType1) || (this.getType(r) == mirrorType2)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static enum Material113 {
+		STATIONARY_LAVA(10), STATIONARY_WATER(9), WATER(8), LAVA(11), AIR(0);
+
+		int id;
+
+		Material113(int id) {
+			this.id = id;
+		}
+
+		int getID() {
+			return this.id;
+		}
 	}
 
 }
