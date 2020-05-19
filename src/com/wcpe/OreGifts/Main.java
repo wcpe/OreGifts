@@ -41,11 +41,10 @@ public final class Main extends JavaPlugin implements Listener {
 	private int checkVersionTime;
 	private boolean autoSaveDataEnable;
 	private int autoSaveDataTime;
-	private List<String> worlds;
 
-	private List<Ore> ores = new ArrayList<>();
+	private HashMap<String, List<Ore>> ores = new HashMap<>();
 
-	public List<Ore> getOres() {
+	public HashMap<String, List<Ore>> getOres() {
 		return ores;
 	}
 
@@ -79,7 +78,7 @@ public final class Main extends JavaPlugin implements Listener {
 		return false;
 	}
 
-	final public static double Version = 3.1;
+	final public static double Version = 4.0;
 	private static Main instance;
 
 	public static Main getInstance() {
@@ -102,23 +101,30 @@ public final class Main extends JavaPlugin implements Listener {
 		log(" Enable！！！");
 	}
 
+	@SuppressWarnings("serial")
 	private void relConfig() {
 		reloadConfig();
 		checkVersionEnable = this.getConfig().getBoolean("CheckVersion.Enable");
 		checkVersionTime = this.getConfig().getInt("CheckVersion.Time");
-		worlds = this.getConfig().getStringList("Worlds");
 		int a = 0;
 		for (String s : this.getConfig().getConfigurationSection("Chances").getKeys(false)) {
-			ores.add(new Ore(this.getConfig().getString("Chances." + s + ".Name"),
-					this.getConfig().getString("Chances." + s + ".Material"),
-					this.getConfig().getString("Chances." + s + ".GiftMaterial"),
-					this.getConfig().getStringList("Chances." + s + ".Lore"),
-					this.getConfig().getStringList("Chances." + s + ".Commands"),
-					this.getConfig().getDouble("Chances." + s + ".Chance"),
-					this.getConfig().getInt("Chances." + s + ".Amount")));
+			ores.put(s, new ArrayList<Ore>() {
+				{
+					for (String ss : getConfig().getConfigurationSection("Chances." + s).getKeys(false)) {
+						add(new Ore(getConfig().getString("Chances." + s + "." + ss + ".Name"),
+								getConfig().getString("Chances." + s + "." + ss + ".Material"),
+								getConfig().getString("Chances." + s + "." + ss + ".GiftMaterial"),
+								getConfig().getStringList("Chances." + s + "." + ss + ".Lore"),
+								getConfig().getStringList("Chances." + s + "." + ss + ".Commands"),
+								getConfig().getDouble("Chances." + s + "." + ss + ".Chance"),
+								getConfig().getInt("Chances." + s + "." + ss + ".Amount"),
+								getConfig().getString("Chances." + s + "." + ss + ".Permission")));
+					}
+				}
+			});
 			a++;
 		}
-		log("§a成功加载§e" + a + "§a个配置");
+		log("§a成功加载§e" + a + "§a个世界配置");
 		reloadData();
 		timeSaveData();
 	}
@@ -193,10 +199,6 @@ public final class Main extends JavaPlugin implements Listener {
 	public void onDisable() {
 		saveData();
 		log(" Disable！！！");
-	}
-
-	public List<String> getWorlds() {
-		return worlds;
 	}
 
 	public Ore Random(List<Ore> ore) {

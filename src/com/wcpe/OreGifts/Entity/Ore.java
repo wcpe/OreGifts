@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Ore {
 	public Ore(String name, String material, String giftMaterial, List<String> lore, List<String> commands,
-			double chance,int amount) {
+			double chance,int amount,String permission) {
 		super();
 		this.name = name;
 		this.material = material;
@@ -13,6 +13,7 @@ public class Ore {
 		this.commands = commands;
 		this.chance = chance;
 		this.amount = amount;
+		this.permission = permission;
 	}
 	private String name;
 	private String material;
@@ -21,8 +22,15 @@ public class Ore {
 	private List<String> commands;
 	private double chance;
 	private int amount;
+	private String permission;
 	public String getName() {
 		return name;
+	}
+	public String getPermission() {
+		return permission;
+	}
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 	public int getAmount() {
 		return amount;

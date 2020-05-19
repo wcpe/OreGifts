@@ -1,6 +1,7 @@
 package com.wcpe.OreGifts;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -32,14 +33,15 @@ public class List1_12 implements Listener {
 		Block to = e.getToBlock();
 		Block block = e.getBlock();
 		int id = block.getType().getId();
-		if (!a.getWorlds().contains(block.getLocation().getWorld().getName())) {
+		List<Ore> list = a.getOres().get(block.getLocation().getWorld().getName());
+		if (list == null) {
 			return;
 		}
 		if (id < 8 && id > 11) {
 			return;
 		}
 		if ((to.getType().getId() == 0) && spawnCobble(id, to)) {
-			Ore ore = a.Random(a.getOres());
+			Ore ore = a.Random(list);
 			if (ore != null) {
 				if (ore.getName() != null && ore.getLore() != null && ore.getGiftMaterial() != null) {
 					Map<String, Object> map = new HashMap<String, Object>();
@@ -48,6 +50,7 @@ public class List1_12 implements Listener {
 					map.put("lore", ore.getLore());
 					map.put("commands", ore.getCommands());
 					map.put("amount", ore.getAmount());
+					map.put("permission", ore.getPermission());
 					Location loc = to.getLocation();
 					a.getGifts().put(loc.getWorld().getName() + ";" + loc.getBlockX() + ";" + loc.getBlockY() + ";"
 							+ loc.getBlockZ(), new Gifts(map));
@@ -63,12 +66,14 @@ public class List1_12 implements Listener {
 		Gifts gf = a.getGifts()
 				.get(loc.getWorld().getName() + ";" + loc.getBlockX() + ";" + loc.getBlockY() + ";" + loc.getBlockZ());
 		if (gf != null) {
-			e.setDropItems(false);
-			if (!Material.AIR.toString().equals(gf.getMaterial())) {
-				e.getBlock().getWorld().dropItem(e.getBlock().getLocation(), ItemStackUtil
-						.getItem(gf.getMaterial().toUpperCase(), gf.getName(), gf.getLore(), gf.getAmount()));
+			if(e.getPlayer().hasPermission(gf.getPermission())) {
+				e.setDropItems(false);
+				if (!Material.AIR.toString().equals(gf.getMaterial())) {
+					e.getBlock().getWorld().dropItem(e.getBlock().getLocation(), ItemStackUtil
+							.getItem(gf.getMaterial().toUpperCase(), gf.getName(), gf.getLore(), gf.getAmount()));
+				}
+				CmdUtil.executionCommands(gf.getCommands(), a.isHasPapi(), e.getPlayer());
 			}
-			CmdUtil.executionCommands(gf.getCommands(), a.isHasPapi(), e.getPlayer());
 			a.getGifts().remove(
 					loc.getWorld().getName() + ";" + loc.getBlockX() + ";" + loc.getBlockY() + ";" + loc.getBlockZ());
 		}

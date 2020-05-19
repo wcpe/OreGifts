@@ -15,6 +15,7 @@ public class Gifts implements ConfigurationSerializable {
 		map.put("lore", lore);
 		map.put("commands", commands);
 		map.put("amount", amount);
+		map.put("permission", permission);
 		return map;
 	}
 	@SuppressWarnings("unchecked")
@@ -25,6 +26,7 @@ public class Gifts implements ConfigurationSerializable {
 		this.lore = (List<String>) map.get("lore");
 		this.commands = (List<String>) map.get("commands");
 		this.amount = (int) map.get("amount");
+		this.permission = (String) map.get("permission");
 	}
 
 	private String name;
@@ -32,10 +34,17 @@ public class Gifts implements ConfigurationSerializable {
 	private List<String> lore;
 	private List<String> commands;
 	private int amount;
+	private String permission;
 	public String getName() {
 		return name;
 	}
 
+	public String getPermission() {
+		return permission;
+	}
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
 	public int getAmount() {
 		return amount;
 	}
